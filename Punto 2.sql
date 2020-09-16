@@ -42,16 +42,24 @@ CREATE OR REPLACE TRIGGER insercion_sucursal
 
         --Para actualización
         ELSE
-            --Si ahora hay más dependencias, se insertan las que faltan
+            --Si ahora hay más sucursales dependientes, se insertan las que faltan
             IF (dependencias_nuevas > dependencias_viejas) THEN
                 FOR i IN (dependencias_viejas+1)..dependencias_nuevas LOOP
                     INSERT INTO sucursal VALUES(codigo || '.' || i, 0);
                 END LOOP;
             
-            --Si ahora hay menos dependencias, se eliminan las que faltan
+            --Si ahora hay menos sucursales dependientes, se eliminan las que faltan
             ELSE
                 FOR i IN (dependencias_nuevas+1)..dependencias_viejas LOOP
-                    DELETE FROM sucursal WHERE cods = (codigo || '.' || i);
+                    --Busca las sucursales hijas
+                    FOR nombre_cod IN (SELECT cods
+                                    FROM sucursal
+                                    --Concatena es patrón regex: '^codigo.i(*)' o sea '^Azul.3(*)
+                                    WHERE REGEXP_LIKE (cods, '^'||codigo||'.'||i||'(*)')
+                                    ) 
+                    LOOP
+                        DELETE FROM sucursal WHERE cods = nombre_cod.cods;
+                    END LOOP;
                 END LOOP;
             END IF;
         END IF;
@@ -70,5 +78,5 @@ SELECT * FROM sucursal;
 UPDATE sucursal SET nrosucdependientes = 2 WHERE cods = 'Azul.3';
 SELECT * FROM sucursal;
 
-UPDATE sucursal SET nrosucdependientes = 2 WHERE cods = 'Azul.3';
+UPDATE sucursal SET nrosucdependientes = 2 WHERE cods = 'Azul';
 SELECT * FROM sucursal;
