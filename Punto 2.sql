@@ -54,7 +54,7 @@ CREATE OR REPLACE TRIGGER insercion_sucursal
                     --Busca las sucursales hijas
                     FOR nombre_cod IN (SELECT cods
                                     FROM sucursal
-                                    --Concatena es patrón regex: '^codigo.i(*)' o sea '^Azul.3(*)
+                                    --Concatena el patrón regex: '^codigo.i(*)' o sea '^Azul.3(*)
                                     WHERE REGEXP_LIKE (cods, '^'||codigo||'.'||i||'(*)')
                                     ) 
                     LOOP
