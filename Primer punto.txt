@@ -38,25 +38,106 @@ INSERT INTO venta VALUES(29	,50	,	5);
 INSERT INTO venta VALUES(99	,60	,	2); 
 
 
-CREATE OR REPLACE PROCEDURE buscar (n IN NUMBER) IS
+CREATE OR REPLACE PROCEDURE generador1 (n IN NUMBER) IS
+num NUMBER(8):= n-1;
 begin
 
-DBMS_OUTPUT.PUT_LINE(n);
+DBMS_OUTPUT.PUT_LINE(num);
 end;
 /
 
-drop table tablaaux;
-create table tablaaux as 
-select distinct nompv, proveedor.codpv, venta.codproducto 
-from proveedor, venta 
-where proveedor.codpv = venta.codpv 
-order by codpv;
 
+
+DROP TABLE tablaaux;
+CREATE TABLE tablaaux AS 
+SELECT DISTINCT nompv, proveedor.codpv, venta.codproducto 
+FROM proveedor, venta 
+WHERe proveedor.codpv = venta.codpv 
+ORDER BY codpv;
+
+DROP TABLE tablaaux2; 
 COLUMN codprod FORMAT A50
-create table tablaaux2 as 
-SELECT nompv, LISTAGG(codproducto, ',') WITHIN GROUP (ORDER BY codproducto) AS codprod
+CREATE TABLE tablaaux2 AS 
+SELECT codpv, LISTAGG(codproducto, ',') WITHIN GROUP (ORDER BY codproducto) AS codprod
 FROM   tablaaux
-GROUP BY nompv;
+GROUP BY codpv;
+
+
+DECLARE
+    TYPE arreglo IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+    codigos arreglo;
+
+
+
+    FOR i IN 
+
+BEGIN 
+    IF codigos.COUNT >= n then
+
+
+    end if;
+
+
+
+CREATE OR REPLACE FUNCTION generador (combinacion IN OUT arreglo ,inicio IN NUMBER, fin IN NUMBER, ind IN NUMBER) 
+    RETURN arreglo IS
+
+    BEGIN
+
+        IF ind = combinacion.COUNT then
+            RETURN combinacion;
+        ELSIF (inicio <= fin) then
+            combinacion(ind):= inicio;
+            generador(combinacion, inicio+1 , fin, ind+1);
+            generador(combinacion, inicio+1 , fin, ind);
+        END IF;
+       
+    END;
+
+
+
+ DECLARE
+    TYPE arreglo IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+    codigos arreglo;
+  
+  
+  
+  
+  begin
+    codigos(0):=0;
+  DBMS_OUTPUT.PUT_LINE(combinacion(codigos,0,3,0));
+  end;
+  /
+
+CREATE PACKAGE paquete1 IS
+  TYPE arreglo IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;
+  FUNCTION generador (combinacion IN OUT arreglo ,inicio IN NUMBER, fin IN NUMBER, ind IN NUMBER) 
+    RETURN arreglo;
+END;
+
+
+
+CREATE OR REPLACE PACKAGE BODY paquete1 IS
+    FUNCTION generador (combinacion IN OUT arreglo ,inicio IN NUMBER, fin IN NUMBER, ind IN NUMBER) 
+    RETURN arreglo IS
+    BEGIN
+
+        IF ind = combinacion.COUNT then
+            RETURN combinacion;
+        ELSIF (inicio <= fin) then
+            combinacion(ind):= inicio;
+            generador(combinacion, inicio+1 , fin, ind+1);
+            generador(combinacion, inicio+1 , fin, ind);
+        END IF;
+       
+    END;
+END;
+
+
+create  type arreglo is varray(2) of number;
+
+
+
 
 
 
@@ -71,3 +152,29 @@ GROUP BY nompv;
 --exception
 --  when no_data_found then
 --    ; 
+
+
+
+
+NOMPV      CODPROD
+---------- --------------------------------------------------
+10 Bjorky     1,2
+20 Chubby     2
+30 Chucky     1,2,5
+40 Kirsty     1,2,5
+50 Lisy       1,2,5
+60 Wimpy      1,2,5
+
+
+30,40,50
+30,40,60
+30,50,60
+40,50,60
+
+n=4 r =3
+
+
+24 / (1)(6)
+
+[50 (Chucky), 20 (Kirsty)] --> {1,2,5}
+
