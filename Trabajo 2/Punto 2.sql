@@ -54,7 +54,7 @@ INSERT INTO VVCITY VALUES(  5, 'Cali',
 SELECT CodigoVendedor, Ciudad, t2.*
 FROM VVCITY t, TABLE(t.ventas) t2;
 
-INSERT INTO VVCITY VALUES(  5, 'Bogotá',
+INSERT INTO VVCITY VALUES(  5, 'bogotá',
                             ventas_anidada(
                                 ventas_tipo(50, 10, 10),
                                 ventas_tipo(35, 5, 50)
@@ -63,12 +63,12 @@ INSERT INTO VVCITY VALUES(  5, 'Bogotá',
 
 INSERT INTO TABLE(  SELECT ventas
                     FROM VVCITY
-                    WHERE CodigoVendedor = 9 AND Ciudad='Cali')
+                    WHERE CodigoVendedor = 9 AND Ciudad='cali')
 VALUES(4, 10, 25);
 
 UPDATE TABLE(   SELECT ventas 
                 FROM VVCITY
-                WHERE CodigoVendedor = 5 AND Ciudad='Cali')
+                WHERE CodigoVendedor = 5 AND Ciudad='cali')
 SET v = v + 800
 WHERE x=4 AND y=10;
 

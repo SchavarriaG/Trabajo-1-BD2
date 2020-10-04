@@ -33,18 +33,27 @@ public class Punto2 {
                 String ciudad = "cali";
                 String[][] ventas = {{"0", "0", "500"},
                 {"250", "300", "900"},
-                {"499", "499", "900"}};
+                {"250", "300", "500"},
+                {"600", "499", "900"}};
                 //Datos de prueba para insertar venta.
                 insertarVentas(vendedor, ciudad, ventas);
                 break;
             case 2:
-                //System.out.println("ingrese la ciudad");
+                //Muestra los puntos de venta para una ciudad dada
+                System.out.println("ingrese la ciudad");
                 String ciudad2 = "cali";
                 mostrarPuntos(ciudad2);
                 break;
         }
     }
 
+    //Inserta las ventas para un vendedor en una ciudad
+    /**
+     * ************************************************************************
+     * Hay que modificar el parámetro String[][] ventas dependiendo de la
+     * interfaz
+    **************************************************************************
+     */
     public static boolean insertarVentas(String vendedor, String ciudad, String[][] ventas) {
         Connection conn;
         Statement sentencia;
@@ -74,17 +83,17 @@ public class Punto2 {
             String y = venta[1];
             String v = venta[2];
             //Este es el comando a ejecutar, varía dependiendo del caso
-            String query;
+            String consulta;
 
             try {
-                //Ya hay registros del vendedor en esa ciudad, se inserta la venta
-                query = "INSERT INTO TABLE( SELECT ventas"
-                        + "                 FROM VVCITY"
-                        + "                 WHERE CodigoVendedor = " + vendedor + " AND Ciudad = '" + ciudad + "')"
+                //Ya hay registros del vendedor en esa ciudad, entonces se inserta una venta más
+                consulta = "INSERT INTO TABLE(  SELECT ventas"
+                        + "                     FROM VVCITY"
+                        + "                     WHERE CodigoVendedor = " + vendedor + " AND Ciudad = '" + ciudad + "')"
                         + "VALUES(" + x + ", " + y + ", " + v + ")";
 
-                sentencia.executeQuery(query);
-                System.out.println("datos guardados: no existía la ubicación");
+                sentencia.executeQuery(consulta);
+                System.out.println("datos guardados: El vendedor no había vendido en ese punto");
                 exito = true;
 
             } catch (SQLException e1) {
@@ -92,14 +101,14 @@ public class Punto2 {
                 //ORA-00001: unique constraint violated
                 if (e1.getMessage().startsWith("ORA-00001")) {
                     try {
-                        query = "UPDATE TABLE(   SELECT ventas"
-                                + "                     FROM VVCITY"
-                                + "                     WHERE CodigoVendedor = " + vendedor + " AND Ciudad='" + ciudad + "')"
+                        consulta = "UPDATE TABLE(   SELECT ventas"
+                                + "                 FROM VVCITY"
+                                + "                 WHERE CodigoVendedor = " + vendedor + " AND Ciudad='" + ciudad + "')"
                                 + "SET v = v + " + v
-                                + "WHERE x = " + x + " AND y = " + y + "";
+                                + "WHERE x = " + x + " AND y = " + y;
 
-                        sentencia.executeQuery(query);
-                        System.out.println("datos guardados: existía la ubicación, venta actualizada");
+                        sentencia.executeQuery(consulta);
+                        System.out.println("datos guardados: Ya existía una venta en el mismo punto, valor actualizado");
                         exito = true;
                     } catch (SQLException e2) {
                         System.out.println("Error: " + e2.getMessage());
@@ -109,11 +118,11 @@ public class Punto2 {
                     //ORA-22908: reference to NULL table value
                 } else if (e1.getMessage().startsWith("ORA-22908")) {
                     try {
-                        query = "INSERT INTO VVCITY VALUES(" + vendedor + ", '" + ciudad + "',"
+                        consulta = "INSERT INTO VVCITY VALUES(" + vendedor + ", '" + ciudad + "',"
                                 + "                         ventas_anidada(ventas_tipo(" + x + ", " + y + ", " + v + ")))";
 
-                        sentencia.executeQuery(query);
-                        System.out.println("datos guardados: no existía el vendedor");
+                        sentencia.executeQuery(consulta);
+                        System.out.println("datos guardados: No existían ventas del vendedor en esa ciudad");
                         exito = true;
                     } catch (SQLException e3) {
                         System.out.println("Error: " + e3.getMessage());
