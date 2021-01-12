@@ -1,0 +1,40 @@
+DROP TABLE figura;
+CREATE TABLE figura(
+    num NUMBER(8) PRIMARY KEY,
+    doc XMLTYPE);
+
+INSERT INTO figura 
+VALUES(
+    1,
+    XMLTYPE('
+    <figuras>
+    <rectangulo> 
+    <a>100</a>
+   <b>100</b>
+   <c>300</c>
+   <d>300</d>
+ </rectangulo>
+</figuras>')
+);
+
+INSERT INTO figura 
+VALUES(2,
+    XMLTYPE('
+<figuras>
+ <rectangulo> 
+   <a>100</a>
+   <b>100</b>
+   <c>300</c>
+   <d>300</d>
+ </rectangulo>
+</figuras>')
+);
+
+COMMIT;
+
+SELECT figura.num as n,
+       EXTRACTVALUE(doc,'/figuras/rectangulo/a') AS a,
+       EXTRACTVALUE(doc,'/figuras/rectangulo/b') AS b,
+       EXTRACTVALUE(doc,'/figuras/rectangulo/c') AS c,
+       EXTRACTVALUE(doc,'/figuras/rectangulo/d') AS d
+FROM figura;
